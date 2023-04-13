@@ -16,8 +16,9 @@ exports.addNewTodo = async (req, res) => {
 
 // Get All Todos
 exports.getAllTodos = async (req, res) => {
+  const userId = req.params.userId;
   try {
-    const allTodos = await Todo.find();
+    const allTodos = await Todo.find({ user: userId });
     res.status(200).json(allTodos);
   } catch (error) {
     console.log(error);
@@ -25,31 +26,17 @@ exports.getAllTodos = async (req, res) => {
   }
 };
 
-// Update Todo
-exports.updateTodo = async (req, res) => {
-  const { id } = req.params;
-  const todo = req.body;
 
-  try {
-    const isTodo = await Todo.findById(id);
-    if (isTodo) {
-      const updatedTodo = await Todo.findByIdAndUpdate(id, todo, { new: true });
-      res.status(200).json(updatedTodo);
-    }
-  } catch (error) {
-    console.log(error);
-    res.status(500).json(error);
-  }
-};
 
 // Delete Todo
 exports.deleteTodo = async (req, res) => {
   const { id } = req.params;
+  const userId = req.query.userId;
   try {
     const isTodo = await Todo.findById(id);
     if (isTodo) {
       await Todo.findByIdAndDelete(id);
-      const allTodos = await Todo.find();
+      const allTodos = await Todo.find({user:userId});
       res.status(200).json(allTodos);
     }
   } catch (error) {
@@ -62,6 +49,7 @@ exports.deleteTodo = async (req, res) => {
 exports.addTask = async (req, res) => {
   const { id } = req.params;
   const task = req.body.task;
+  const userId = req.query.userId;
 
   try {
     const isTodo = await Todo.findById(id);
@@ -72,7 +60,7 @@ exports.addTask = async (req, res) => {
         { new: true }
       );
 
-      const allTodos = await Todo.find();
+      const allTodos = await Todo.find({ user: userId });
       res.status(201).json(allTodos);
     }
   } catch (error) {
@@ -84,7 +72,8 @@ exports.addTask = async (req, res) => {
 // Delete Todo
 exports.deleteTask = async (req, res) => {
   const { id } = req.params;
-  const taskId = req.body.taskId;
+  const taskId = req.query.taskId;
+  const userId = req.query.userId;
   try {
     const isTodo = await Todo.findById(id);
     if (isTodo) {
@@ -94,7 +83,7 @@ exports.deleteTask = async (req, res) => {
         { new: true }
       );
 
-      const allTodos = await Todo.find();
+      const allTodos = await Todo.find({user:userId});
       res.status(201).json(allTodos);
     }
   } catch (error) {
